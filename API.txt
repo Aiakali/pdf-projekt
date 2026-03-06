@@ -1,2351 +1,859 @@
-1. Как с помощью API в Магазине на Kaspi.kz получить список моих заказов?
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
-
- 
-
-Параметр
-
-Значение
-
-page[number]
-
-Номер страницы с результатом запроса
-
- 
-
-На одной странице может быть максимум 100 заказов
-
- 
-
-Укажите номер нужной страницы, начиная с 0
-
-page[size]
-
-Количество заказов, которое будет на одной странице в ответе
-
- 
-
-Максимум — 100
-
-filter[orders][state]
-
-Состояние заказа
-
- 
-
-NEW
-
-SIGN_REQUIRED
-
-PICKUP
-DELIVERY
-KASPI_DELIVERY
-ARCHIVE
-
-новый
-
-нужно подписать документы
-
-самовывоз
-ваша доставка
-Kaspi Доставка
-
-архивный
-
-filter[orders][creationDate]
-
-Дата создания заказа
-
- 
-
-Указывается в миллисекундах
-
- 
-
-[$ge]
-
-[$le]
-
-начальное значение
-
-конечное значение
-
-filter[orders][status]
-
-Статус заказа
-
- 
-
-APPROVED_BY_BANK
-
-ACCEPTED_BY_MERCHANT
-
-COMPLETED
-
-CANCELLED
-
-CANCELLING
-
-KASPI_DELIVERY_RETURN_REQUESTED
-
-RETURNED
-
-продавец должен его принять
-
-принят
-
-завершен
-
-отменен
-
-в процессе отмены
-
-ожидает возврата
-
-возвращен
-
-filter[orders][deliveryType]
-
-Способ доставки
-
- 
-
-Используйте, только если filter[orders][state] не равен PICKUP
-
-DELIVERY, KASPI_DELIVERY или PICKUP
-
- 
-
-PICKUP
-
-DELIVERY
-
-самовывоз
-
-доставка
-
-filter[orders][signatureRequired]
-
-Подписание документов
-
- 
-
-Используйте, если filter[orders][state] не равен SIGN_REQUIRED
-
- 
-
-true
-
-false
-
-необходимо
-
-не требуется
-
-include[orders]
-
-Дополнительные данные о заказе
-
- 
-
-user
-
-Информация о покупателе, который оформил заказ
-
- 
-
- Посмотреть пример запроса
-
-GET
-https://kaspi.kz/shop/api/v2/orders?page[number]=0&page[size]=20&filter[orders][state]=NEW
-&filter[orders][creationDate][$ge]=1478736000000&filter[orders][creationDate][$le]=1479945600000
-&filter[orders][status]=APPROVED_BY_BANK&filter[orders][deliveryType]=PICKUP
-&filter[orders][signatureRequired]=false&include[orders]=user
-Content-Type:application/vnd.api+json
-X-Auth-Token: <token>
- 
-
-В ответе вы получите информацию о каждом заказе.
-
- 
-
-Атрибут
-
-Значение
-
-code
-
-Номер заказа
-
-totalPrice
-
-Общая сумма заказа в тенге
-
-customer
-
-ФИО и номер телефона покупателя
-
-deliveryMode
-
-Способ доставки
-
- 
-
-DELIVERY_LOCAL	по городу — Kaspi Доставка или силами продавца
-DELIVERY_PICKUP
-
-"isKaspiDelivery": true
-
-DELIVERY_REGIONAL_TODOOR
-
-"isKaspiDelivery": true
-
-доставка в Kaspi Postomat
-
- 
-
-Kaspi Доставка
-
-DELIVERY_PICKUP
-
-"isKaspiDelivery": false
-
-DELIVERY_REGIONAL_PICKUP
-
-самовывоз
-
- 
-
-доставка по области до склада с зоной выдачи заказов, покупатель заберет самовывозом
-
-paymentMode
-
-Способ оплаты заказа
-
- 
-
-PAY_WITH_CREDIT
-
-PREPAID
-
-Кредит на Покупки
-
-безналичная оплата
-
-signatureRequired
-
-Подписать кредит
-
- 
-
-true
-
-false
-
-необходимо
-
-не нужно
-
-creditTerm
-
-Срок Кредита на Покупки
-
-preOrder
-
-Оформлен по предзаказу
-
- 
-
-true
-
-false
-
-да
-
-нет
-
-state
-
-Состояние заказа
-
- 
-
-NEW
-
-SIGN_REQUIRED
-
-PICKUP
-DELIVERY
-KASPI_DELIVERY
-ARCHIVE
-
-новый
-
-нужно подписать документы
-
-самовывоз
-ваша доставка
-Kaspi Доставка
-
-архивный
-
-creationDate
-
-Дата создания заказа
-
- 
-
-Указывается в миллисекундах
-
-approvedByBankDate
-
-Дата одобрения заказа банком
-
- 
-
-Указывается в миллисекундах
-
-plannedDeliveryDate
-
-Планируемая дата доставки
-
- 
-
-Указывается в миллисекундах
-
-reservationDate
-
-Дата доставки по предзаказу
-
- 
-
-Указывается в миллисекундах
-
-status
-
-Статус заказа
-
- 
-
-APPROVED_BY_BANK
-
-ACCEPTED_BY_MERCHANT
-
-COMPLETED
-
-CANCELLED
-
-CANCELLING
-
-KASPI_DELIVERY_RETURN_REQUESTED
-
-RETURNED
-
-продавец должен его принять
-
-принят
-
-завершен
-
-отменен
-
-в процессе отмены
-
-ожидает возврата
-
-возвращен
-
-deliveryCost
-
-Стоимость доставки
-
-isImeiRequired	IMEI-код товара в заказе
- 	
-true
-
-false
-
-необходимо указать
-
-код не нужен
-
-id
-
-Уникальный код
-
-waybill
-
-Ссылка на накладную
-
- 
-
-Необходимо распечатать и прикрепить на заказы для Kaspi Доставки
-
-courierTransmissionPlanningDate
-
-Планируемая дата передачи заказа курьеру Kaspi Доставки
-
- 
-
-Указывается в миллисекундах
-
-courierTransmissionDate
-
-Фактическая дата передачи заказа курьеру
-
- 
-
-Указывается в миллисекундах
-
-deliveryAddress
-
-Адрес доставки
-
-waybillNumber
-
-Номер накладной
-
-category
-
-Категория товара
-
-deliveryCostForSeller
-
-Стоимость доставки для продавца
-
-express
-
-Покупатель выбрал Express-доставку
-
- 
-
-true
-
-false
-
-да
-
-нет
-
-returnedToWarehouse
-
-Заказ возвращен в пункт приема
-
- 
-
-true
-
-false
-
-да
-
-нет
-
-entries
-
-Состав заказа
-
-user
-
-Покупатель
-
-{ "data": [{"type": "orders","id": "orderID","attributes": {"customer": {"firstName": "Иван Иваныч","lastName": "Иванов","cellPhone": "7xx0xxxxxx"},"code": "ordercode","totalPrice": 96045,"deliveryMode":"DELIVERY_PICKUP","paymentMode": "PAY_WITH_CREDIT","signatureRequired": false,"state": "PICKUP","creationDate": 1479470446241,"approvedByBankDate":1479470451108,"status": "ACCEPTED_BY_MERCHANT","deliveryCost": 1000,"isImeiRequired": false},"relationships": {"entries": {"links": {"self": "/v2/orders/orderID/relationships/entries","related": "/v2/orders/orderID/entries"}},"user": {"links": {"self": "/v2/orders/orderID/relationships/user","related": "/v2/orders/orderID/user"},"data": {"type": "customers","id": "customerID"}}},"links": {"self": "/v2/orders/orderID"}}],"included": [{"type": "customers","id": "customerID","attributes": {"firstName": "Иван","lastName": "Иваныч","cellPhone": "7xx0xxxxxx"},"relationships": {},"links": {"self":"/v2/customers/customerID"}}],"meta": {"pageCount": 1,"totalCount": 1}}
-
-
-2. Как с помощью API в Магазине на Kaspi.kz изменить статус заказа?
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
-
- 
-
-Параметр
-
-Значение
-
-type
-
-Тип объекта
-
- 
-
-В этом запросе — orders
-
-id
-
-Уникальный код заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите информацию о составе заказа;
-скопируйте значение атрибута «id» для "type": "orders".
- 
-
-Атрибут
-
-Значение
-
-Code
-
-Номер заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите список заказов;
-
-скопируйте значение атрибута «code».
-
-Status
-
-Статус заказа
-
- 
-
-ACCEPTED_BY_MERCHANT
-
-COMPLETED
-
- 
-
- 
-
- 
-
-CANCELLED 
-
- 
-
- 
-
- 
-
-ARRIVED 
-
-ARRIVED_BACKWARD
-
- 
-
- 
-
- 
-
-ASSEMBLE
-
-Принят
-
-Выдан покупателю
-
-Для заказов со статусом «ACCEPTED_BY_MERCHANT»
-
-Отменен
-
-Для заказов со статусом «ACCEPTED_BY_MERCHANT» или «APPROVED_BY_BANK»
-
-Прибыл на склад
-
-Для товаров по предзаказу
-
-Возвращенный товар прибыл на склад
-
-Для заказов со статусом CANCELLING или KASPI_DELIVERY_RETURN_REQUESTED
-
-Скомплектован
-
-Для заказов со статусом ACCEPTED_BY_MERCHANT
-
-cancellationReason
-
-Причина отмены
-
- 
-
-Необходима при статусе заказа CANCELLED
-
- 
-
-BUYER_CANCELLATION_BY_MERCHANT
-
-• BUYER_NOT_REACHABLE
-
-• MERCHANT_OUT_OF_STOCK
-
-Покупатель отменил заказ
-
- 
-
-Не удалось связаться с покупателем
-
-Товара нет в наличии
-
-cancellationComment
-
-Комментарий продавца
-
- 
-
-Для заказов со статусом CANCELLING
-
-Максимум 1000 символов
-
- 
-
- 
-
- Посмотреть пример запроса
-
-https://kaspi.kz/shop/api/v2/orders
-POST /api/v2/orders
-HTTP/1.1
-Host: kaspi.kz/shop
-Content-Type: application/vnd.api+json
-X-Auth-Token:token
-{
-"data":
-{
-"type": "orders",
-"id": "ordersID=",
-"attributes": {
-"code": "ordercode ",
-"status": "ARRIVED"
-}
-}
- 
-
-В ответе вы получите информацию о заказе и его новый статус.
-
- 
-
- Посмотреть пример ответа
+# Kaspi Merchant API — Справочник
+# Источник: https://kaspi.kz/shop/api/v2
+# Авторизация: Header X-Auth-Token: <token>
+# Content-Type: application/vnd.api+json
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 1. Получить список заказов
+
+GET https://kaspi.kz/shop/api/v2/orders
+
+### Параметры запроса:
+
+  Параметр                            | Описание
+  ------------------------------------|--------------------------------------------------
+  page[number]                        | Номер страницы (начиная с 0)
+  page[size]                          | Кол-во заказов на странице (макс. 100)
+  filter[orders][state]               | Состояние заказа (см. таблицу ниже)
+  filter[orders][creationDate][$ge]   | Дата создания ОТ (в миллисекундах)
+  filter[orders][creationDate][$le]   | Дата создания ДО (в миллисекундах)
+  filter[orders][status]              | Статус заказа (см. таблицу ниже)
+  filter[orders][deliveryType]        | Способ доставки: DELIVERY, KASPI_DELIVERY, PICKUP
+  filter[orders][signatureRequired]   | Подписание документов: true / false
+  include[orders]                     | Доп. данные: user — информация о покупателе
+
+### Состояния заказа (state):
+
+  Значение        | Описание
+  ----------------|----------------------------
+  NEW             | Новый
+  SIGN_REQUIRED   | Нужно подписать документы
+  PICKUP          | Самовывоз
+  DELIVERY        | Ваша доставка
+  KASPI_DELIVERY  | Kaspi Доставка
+  ARCHIVE         | Архивный
+
+### Статусы заказа (status):
+
+  Значение                           | Описание
+  -----------------------------------|-----------------------------------
+  APPROVED_BY_BANK                   | Продавец должен принять
+  ACCEPTED_BY_MERCHANT               | Принят продавцом
+  COMPLETED                          | Завершён
+  CANCELLED                          | Отменён
+  CANCELLING                         | В процессе отмены
+  KASPI_DELIVERY_RETURN_REQUESTED    | Ожидает возврата
+  RETURNED                           | Возвращён
+
+### Пример запроса:
+
+  GET https://kaspi.kz/shop/api/v2/orders
+    ?page[number]=0
+    &page[size]=20
+    &filter[orders][state]=NEW
+    &filter[orders][creationDate][$ge]=1478736000000
+    &filter[orders][creationDate][$le]=1479945600000
+    &filter[orders][status]=APPROVED_BY_BANK
+    &filter[orders][deliveryType]=PICKUP
+    &filter[orders][signatureRequired]=false
+    &include[orders]=user
+
+  Headers:
+    Content-Type: application/vnd.api+json
+    X-Auth-Token: <token>
+
+### Атрибуты в ответе:
+
+  Атрибут                             | Описание
+  ------------------------------------|--------------------------------------------------
+  code                                | Номер заказа
+  totalPrice                          | Общая сумма в тенге
+  customer                            | ФИО и телефон покупателя
+  paymentMode                         | Способ оплаты (см. ниже)
+  signatureRequired                   | Нужно подписать кредит (true/false)
+  creditTerm                          | Срок Кредита на Покупки
+  preOrder                            | Оформлен по предзаказу (true/false)
+  state                               | Состояние заказа
+  status                              | Статус заказа
+  creationDate                        | Дата создания (мс)
+  approvedByBankDate                  | Дата одобрения банком (мс)
+  plannedDeliveryDate                 | Планируемая дата доставки (мс)
+  reservationDate                     | Дата доставки по предзаказу (мс)
+  deliveryCost                        | Стоимость доставки
+  deliveryCostForSeller               | Стоимость доставки для продавца
+  isImeiRequired                      | Нужен IMEI-код (true/false)
+  id                                  | Уникальный код заказа
+  waybill                             | Ссылка на накладную (для Kaspi Доставки)
+  courierTransmissionPlanningDate     | Планируемая дата передачи курьеру (мс)
+  courierTransmissionDate             | Фактическая дата передачи курьеру (мс)
+  deliveryAddress                     | Адрес доставки (объект)
+  waybillNumber                       | Номер накладной
+  category                            | Категория товара
+  express                             | Express-доставка (true/false)
+  returnedToWarehouse                 | Возвращён в пункт приёма (true/false)
+  entries                             | Состав заказа (связь)
+  user                                | Покупатель (связь)
+
+### Способы доставки (deliveryMode):
+
+  Значение                | isKaspiDelivery | Описание
+  ------------------------|-----------------|------------------------------------
+  DELIVERY_LOCAL          | —               | По городу (Kaspi или силами продавца)
+  DELIVERY_PICKUP         | true            | Доставка в Kaspi Postomat
+  DELIVERY_REGIONAL_TODOOR| true            | Kaspi Доставка (межгород)
+  DELIVERY_PICKUP         | false           | Самовывоз
+  DELIVERY_REGIONAL_PICKUP| —               | Доставка до склада, самовывоз
+
+### Способы оплаты (paymentMode):
+
+  Значение        | Описание
+  ----------------|----------------------------
+  PAY_WITH_CREDIT | Кредит на Покупки
+  PREPAID         | Безналичная оплата
+
+### Адрес доставки (deliveryAddress):
+
+  Поле              | Описание
+  ------------------|----------------------------
+  streetName        | Улица
+  streetNumber      | Номер дома
+  town              | Город
+  district          | Район
+  building          | Номер строения
+  formattedAddress  | Полный адрес
+  latitude          | Широта
+  longitude         | Долгота
+
+### Пример ответа:
 
 {
-    "data": {
-        "type": "orders",
-        "id": "ordersID",
-        "attributes": {
-            "code": "ordercode",
-            "status": "ARRIVED"
-        },
-        "relationships": {
-            "user": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orders/ordersID/relationships/user",
-                    "related": "https://kaspi.kz/shop/api/v2/orders/ordersID/user"
-                },
-                "data": null
-            },
-            "entries": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orders/ordersID/relationships/entries",
-                    "related": "https://kaspi.kz/shop/api/v2/orders/ordersID/entries"
-                }
-            }
-        },
-        "links": {
-            "self": "https://kaspi.kz/shop/api/v2/orders/ordersID"
-        }
+  "data": [{
+    "type": "orders",
+    "id": "orderID",
+    "attributes": {
+      "customer": {
+        "firstName": "Иван Иваныч",
+        "lastName": "Иванов",
+        "cellPhone": "7xx0xxxxxx"
+      },
+      "code": "ordercode",
+      "totalPrice": 96045,
+      "deliveryMode": "DELIVERY_PICKUP",
+      "paymentMode": "PAY_WITH_CREDIT",
+      "signatureRequired": false,
+      "state": "PICKUP",
+      "creationDate": 1479470446241,
+      "approvedByBankDate": 1479470451108,
+      "status": "ACCEPTED_BY_MERCHANT",
+      "deliveryCost": 1000,
+      "isImeiRequired": false
     },
-    "included": []
-}
-
-3. Как с помощью API в Магазине на Kaspi.kz получить основную информацию о заказе, если у меня есть его код?
-Для этого отправьте API-запрос.  Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
-
- 
-
-Параметр
-
-Значение
-
-filter[orders][code]
-
-Номер заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите список заказов;
-скопируйте значение атрибута «code».
- 
-
- Посмотреть пример запроса
-
-GET
-https://kaspi.kz/shop/api/v2/orders?filter[orders][code]=ordercode
-ContentType: application/vnd.api+json
-X-Auth-Token:token
- 
-
-В ответе вы получите информацию о заказе.
-
- 
-
-Атрибут
-
-Значение
-
-id
-
-Уникальный код заказа
-
- 
-
-Для "type": "orders"
-
-code
-
-Номер заказа
-
-totalPrice
-
-Общая сумма заказа в тенге
-
-customer
-
-ФИО и номер телефона покупателя
-
-paymentMode
-
-Способ оплаты заказа
-
- 
-
-PAY_WITH_CREDIT
-
-PREPAID
-
-Кредит на Покупки
-
-безналичная оплата
-
-plannedDeliveryDate
-
-Планируемая дата доставки
-
- 
-
-Указывается в миллисекундах
-
-creationDate
-
-Дата получения заказа
-
- 
-
-Указывается в миллисекундах
-
-deliveryCostForSeller
-
-Стоимость доставки для продавца
-
-isKaspiDelivery
-
-Kaspi Доставка
-
- 
-
-true
-
-false
-
-да
-
-нет
-
-deliveryMode
-
-Способ доставки
-
- 
-
-DELIVERY_LOCAL
-
-по городу — Kaspi Доставка или силами продавца
-
- 	
-DELIVERY_PICKUP
-
-"isKaspiDelivery": true
-
-DELIVERY_REGIONAL_TODOOR
-
-"isKaspiDelivery": true
-
-доставка в Kaspi Postomat
-
- 
-
-Kaspi Доставка
-
- 	
-DELIVERY_PICKUP
-
-"isKaspiDelivery": false
-
-DELIVERY_REGIONAL_PICKUP
-
-самовывоз
-
- 
-
-доставка по области до склада с зоной выдачи заказов, покупатель заберет самовывозом
-
-deliveryAddress
-
-Адрес доставки
-
- 
-
-streetName
-
-streetNumber
-
-town
-
-district
-
-building
-
-formattedAddress
-
- 
-
- 
-
-latitude
-
-longitude
-
-улица
-
-номер дома
-
-город
-
-район
-
-номер строения
-
-полный адрес
-
- 
-
-Географические координаты:
-
-широта
-
-долгота
-
-signatureRequired
-
-Подписать кредит
-
- 
-
-true
-
-false
-
-необходимо
-
-не нужно
-
-creditTerm
-
-Срок Кредита на Покупки
-
-preOrder
-
-Оформлен по предзаказу
-
- 
-
-true
-
-false
-
-да
-
-нет
-
-pickupPointId
-
-Уникальный код склада с зоной выдачи заказов
-
-state
-
-Состояние заказа
-
- 
-
-NEW
-
-SIGN_REQUIRED
-
-PICKUP
-DELIVERY
-KASPI_DELIVERY
-ARCHIVE
-
-новый
-
-нужно подписать документы
-
-самовывоз
-ваша доставка
-Kaspi Доставка
-архивный
-
-approvedByBankDate
-
-Дата одобрения заказа банком
-
- 
-
-Указывается в миллисекундах
-
-status
-
-Статус заказа
-
- 
-
-APPROVED_BY_BANK
-
-ACCEPTED_BY_MERCHANT
-
-COMPLETED
-
-CANCELLED
-
-CANCELLING
-
-KASPI_DELIVERY_RETURN_REQUESTED
-
-RETURNED
-
-продавец должен его принять
-
-принят
-
-завершен
-
-отменен
-
-в процессе отмены
-
-ожидает возврата
-
-возвращен
-
-customer
-
-Покупатель
-
- 
-
-id
-
-
- 
-
-name
-
-firstName
-
-lastName
-
-Уникальный код клиента в системе Магазина на Kaspi.kz
-
-
-Имя в системе Магазина на Kaspi.kz
-
-Имя
-
-Фамилия
-
-deliveryCost
-
-Стоимость доставки
-
- 
-
- Посмотреть пример ответа
-
- {
-    "data": [
-        {
-            "type": "orders",
-            "id": "orderId",
-            "attributes": {
-                "code": "ordercode",
-                "totalPrice": 4000.0,
-                "paymentMode": "PAY_WITH_CREDIT",
-                "plannedDeliveryDate": 1706896790999,
-                "creationDate": 1706608613252,
-                "deliveryCostForSeller": 0.0,
-                "isKaspiDelivery": false,
-                "deliveryMode": "DELIVERY_LOCAL",
-                "deliveryAddress": {
-                    "streetName": "улица Наурызбай батыра",
-                    "streetNumber": "154А",
-                    "town": "Алматы",
-                    "district": null,
-                    "building": null,
-                    "apartment": null,
-                    "formattedAddress": "Алматы, улица Наурызбай батыра, 154А",
-                    "latitude": 43.240013,
-                    "longitude": 76.938854
-                },
-                "signatureRequired": false,
-                "creditTerm": 3,
-                "preOrder": false,
-                "pickupPointId": «merchant_PP1",
-                "state": "DELIVERY",
-                "approvedByBankDate": 1706608657792,
-                "status": "ACCEPTED_BY_MERCHANT",
-                "customer": {
-                    "id": "customerId",
-                    "name": null,
-                    "cellPhone": "7750000000",
-                    "firstName": "customerfirstname",
-                    "lastName": "customerlastname"
-                },
-                "deliveryCost": 500.0
-            },
-            "relationships": {
-                "user": {
-                    "links": {
-                        "self": "https://kaspi.kz/shop/api/v2/orders/orderId/relationships/user",
-                        "related": "https://kaspi.kz/shop/api/v2/orders/orderId/user"
-                    },
-                    "data": {
-                        "type": "customers",
-                        "id": "customerId"
-                    }
-                },
-                "entries": {
-                    "links": {
-                        "self": "https://kaspi.kz/shop/api/v2/orders/orderId/relationships/entries",
-                        "related": "https://kaspi.kz/shop/api/v2/orders/orderId/entries"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://kaspi.kz/shop/api/v2/orders/orderId"
-            }
+    "relationships": {
+      "entries": {
+        "links": {
+          "self": "/v2/orders/orderID/relationships/entries",
+          "related": "/v2/orders/orderID/entries"
         }
-    ],
-    "included": [],
-    "meta": {
-        "pageCount": 1,
-        "totalCount": 1
+      },
+      "user": {
+        "links": {
+          "self": "/v2/orders/orderID/relationships/user",
+          "related": "/v2/orders/orderID/user"
+        },
+        "data": { "type": "customers", "id": "customerID" }
+      }
+    },
+    "links": { "self": "/v2/orders/orderID" }
+  }],
+  "included": [{
+    "type": "customers",
+    "id": "customerID",
+    "attributes": {
+      "firstName": "Иван",
+      "lastName": "Иваныч",
+      "cellPhone": "7xx0xxxxxx"
     }
+  }],
+  "meta": { "pageCount": 1, "totalCount": 1 }
 }
 
-4. Как с помощью API в Магазине на Kaspi.kz получить информацию о товарах в моем заказе?
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
 
- 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Параметр
+## 2. Изменить статус заказа
 
-Значение
+POST https://kaspi.kz/shop/api/v2/orders
 
-orderId
+### Параметры запроса:
 
-Уникальный код заказа
+  Параметр | Описание
+  ---------|-------------------------------------------
+  type     | Тип объекта: "orders"
+  id       | Уникальный код заказа
 
- 
+### Атрибуты:
 
-Чтобы его узнать:
+  Атрибут              | Описание
+  ---------------------|--------------------------------------------------
+  code                 | Номер заказа
+  status               | Новый статус (см. таблицу ниже)
+  cancellationReason   | Причина отмены (при status=CANCELLED)
+  cancellationComment  | Комментарий продавца (макс. 1000 символов)
 
-с помощью API в Магазине на Kaspi.kz получите информацию о составе заказа;
-скопируйте значение атрибута «id» для "type": "orders".
- 
+### Допустимые статусы:
 
- Посмотреть пример запроса
+  Статус                 | Описание                        | Условие
+  -----------------------|---------------------------------|---------------------------------
+  ACCEPTED_BY_MERCHANT   | Принят                          | Текущий: APPROVED_BY_BANK
+  COMPLETED              | Выдан покупателю                | Текущий: ACCEPTED_BY_MERCHANT
+  CANCELLED              | Отменён                         | Текущий: ACCEPTED_BY_MERCHANT или APPROVED_BY_BANK
+  ARRIVED                | Прибыл на склад (предзаказ)     | Товары по предзаказу
+  ARRIVED_BACKWARD       | Возврат прибыл на склад         | Текущий: CANCELLING или KASPI_DELIVERY_RETURN_REQUESTED
+  ASSEMBLE               | Скомплектован                   | Текущий: ACCEPTED_BY_MERCHANT
 
-GET
-https://kaspi.kz/shop/api/v2/orders/orderID/entries
-ContentType: application/vnd.api+json
-X-Auth-Token:token
- 
+### Причины отмены (cancellationReason):
 
-В ответе вы получите информацию о стоимости заказа и всех товаров, а также об их количестве.
+  Значение                        | Описание
+  --------------------------------|-----------------------------------
+  BUYER_CANCELLATION_BY_MERCHANT  | Покупатель отменил заказ
+  BUYER_NOT_REACHABLE             | Не удалось связаться с покупателем
+  MERCHANT_OUT_OF_STOCK           | Товара нет в наличии
 
- 
+### Пример запроса:
 
-Атрибут
+POST https://kaspi.kz/shop/api/v2/orders
+Headers:
+  Content-Type: application/vnd.api+json
+  X-Auth-Token: <token>
 
-Значение
-
-id
-
-Уникальный код товара в заказе
-
-unitType
-
-Тип товара
-
- 
-
-MEASURABLE_PIECES
-
-MEASURABLE
-
-PIECES
-
-цельно-весовой
-
-весовой
-
-штучный
-
-quantity
-
-Количество каждого товара в заказе
-
-totalPrice
-
-Общая стоимость заказа
-
-weight
-
-Вес товара
-
- 
-
-Только для товаров, у которых указан вес
-
-entryNumber
-
-Порядковый номер товара в заказе
-
-category
-
-Код категории
-
-title
-
-Название категории
-
-deliveryCost
-
-Стоимость доставки
-
-basePrice
-
-Стоимость товара
-
-isImeiRequired	IMEI-код товара в заказе
- 	true
-false
-
-необходимо указать
-код не нужен
-
- 
-
- Посмотреть пример ответа
-
- {
-    "data": [
-
-        {
-
-            "type": "orderentries",
-
-            "id": "orderentriesId»,
-
-            "attributes": {
-
-                "unitType": "PIECES",
-
-                "quantity": 2,
-
-                "totalPrice": 4000.0,
-
-                "weight": 2000.0,
-
-                "entryNumber": 0,
-
-                "category": {
-
-                    "code": "Master - Fruits",
-
-                    "title": "Фрукты"
-
-                },
-
-                "deliveryCost": 500.0,
-
-                "basePrice": 2000.0,
-
-"isImeiRequired": false
-
-            },
-
-            "relationships": {
-
-                "deliveryPointOfService": {
-
-                    "links": {
-
-                        "self": "https://kaspi.kz/shop/api/v2/orderentries/orderentriesId/relationships/deliveryPointOfService",
-
-                        "related": "https://kaspi.kz/shop/api/v2/orderentries/orderentriesId/deliveryPointOfService"
-
-                    },
-
-                    "data": {
-
-                        "type": "pointofservices",
-
-                        "id": "pointofservicesId»
-
-                    }
-
-                },
-
-                "product": {
-
-                    "links": {
-
-                        "self": "https://kaspi.kz/shop/api/v2/orderentries/orderentriesId/relationships/product",
-
-                        "related": "https://kaspi.kz/shop/api/v2/orderentries/orderentriesId/product"
-
-                    },
-
-                    "data": {
-
-                        "type": "masterproducts",
-
-                        "id": "masterproductsId»
-
-                    }
-
-                }
-
-            },
-
-            "links": {
-
-                "self": "https://kaspi.kz/shop/api/v2/orderentries/orderentriesId"
-
-            }
-
-        }
-
-    ],
-
-    "included": []
-
-}
-
-5. Как с помощью API в Магазине на Kaspi.kz сформировать накладную для передачи заказа на Kaspi Доставку?
-Для этого измените статус товара на «Передача». Чтобы это сделать, отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
-
- 
-
-Параметр
-
-Значение
-
-type
-
-Тип объекта
-
- 
-
-В этом запросе — orders
-
-id
-
-Уникальный код заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите информацию о составе заказа;
-скопируйте значение атрибута «id» для "type": "orders".
- 
-
-Атрибут
-
-Значение
-
-numberOfSpace
-
-Количество накладных
-
- 
-
-Указывается самостоятельно
-
-status
-
-Статус заказа
-
- 
-
-В этом ответе — ASSEMBLE
-
- 
-
- Посмотреть пример запроса
-
-https://kaspi.kz/shop/api/v2/orders
-POST /api/v2/orders
-HTTP/1.1
-Host: kaspi.kz/shop
-Content-Type: application/vnd.api+json
-X-Auth-Token:token
+Body:
 {
-"data":
+  "data": {
+    "type": "orders",
+    "id": "ordersID",
+    "attributes": {
+      "code": "ordercode",
+      "status": "ARRIVED"
+    }
+  }
+}
+
+### Пример ответа:
+
 {
-"type": "orders",
-"id": " ordersID",
-"attributes": {
-"status": "ASSEMBLE",
-"numberOfSpace": "2"
-}
-}
-}
- 
-
-В ответе вы получите информацию о заказе и его новый статус.
-
- 
-
- Посмотреть пример ответа
-
- {
-    "data": {
-        "type": "orders",
-        "id": "ordersID=",
-        "attributes": {
-            "numberOfSpace": 2,
-            "status": "ASSEMBLE"
-        },
-        "relationships": {
-            "user": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orders/ordersID=/relationships/user",
-                    "related": "https://kaspi.kz/shop/api/v2/orders/ordersID=/user"
-                },
-                "data": null
-            },
-            "entries": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orders/ordersID=/relationships/entries",
-                    "related": "https://kaspi.kz/shop/api/v2/orders/ordersID=/entries"
-                }
-            }
-        },
-        "links": {
-            "self": "https://kaspi.kz/shop/api/v2/orders/ordersID="
-        }
+  "data": {
+    "type": "orders",
+    "id": "ordersID",
+    "attributes": {
+      "code": "ordercode",
+      "status": "ARRIVED"
     },
-    "included": []
-}
-
-
-6. Как с помощью API в Магазине на Kaspi.kz принять новый заказ?
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
-
- 
-
-Параметр
-
-Значение
-
-type
-
-Тип объекта
-
- 
-
-В этом запросе — orders
-
-id
-
-Уникальный код заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите информацию о составе заказа;
-скопируйте значение атрибута «id» для "type": "orders".
- 
-
-Атрибут
-
-Значение
-
-Code
-
-Номер заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите список заказов;
-скопируйте значение атрибута «code».
-Status
-
-Статус заказа
-
- 
-
-В этом ответе — ACCEPTED_BY_MERCHANT
-
- 
-
- Посмотреть пример запроса
-
-https://kaspi.kz/shop/api/v2/orders
-POST /api/v2/orders
-HTTP/1.1
-Host: kaspi.kz/shop
-Content-Type: application/vnd.api+json
-X-Auth-Token:token
-{
-"data":
-{
-"type": "orders",
-"id": "ordersID",
-"attributes": {
-"code": "ordercode",
-"status": "ACCEPTED_BY_MERCHANT"
-}
-}
- 
-
-В ответе вы получите информацию о заказе и его новый статус.
-
- 
-
- Посмотреть пример ответа
-
- {
-    "data": {
-        "type": "orders",
-        "id": "ordersID",
-        "attributes": {
-            "code": "ordercode",
-            "status": "ACCEPTED_BY_MERCHANT"
-        },
-        "relationships": {
-            "user": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orders/ordersID/relationships/user",
-                    "related": "https://kaspi.kz/shop/api/v2/orders/ordersID/user"
-                },
-                "data": null
-            },
-            "entries": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orders/ordersID/relationships/entries",
-                    "related": "https://kaspi.kz/shop/api/v2/orders/ordersID/entries"
-                }
-            }
-        },
+    "relationships": {
+      "user": {
         "links": {
-            "self": "https://kaspi.kz/shop/api/v2/orders/ordersID"
+          "self": ".../orders/ordersID/relationships/user",
+          "related": ".../orders/ordersID/user"
+        },
+        "data": null
+      },
+      "entries": {
+        "links": {
+          "self": ".../orders/ordersID/relationships/entries",
+          "related": ".../orders/ordersID/entries"
         }
-    },
-    "included": []
+      }
+    }
+  }
 }
 
-7. Как с помощью API в Магазине на Kaspi.kz получить описание товаров в заказе?
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
 
- 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Параметр
+## 3. Получить информацию о заказе по коду
 
-Значение
+GET https://kaspi.kz/shop/api/v2/orders?filter[orders][code]=ordercode
 
-orderentriesID
+### Параметры:
 
-Уникальный код заказа
+  Параметр              | Описание
+  ----------------------|-----------------------------------
+  filter[orders][code]  | Номер заказа (значение атрибута code)
 
- 
+### Пример запроса:
 
-Чтобы его узнать:
+GET https://kaspi.kz/shop/api/v2/orders?filter[orders][code]=ordercode
+Headers:
+  Content-Type: application/vnd.api+json
+  X-Auth-Token: <token>
 
-с помощью API в Магазине на Kaspi.kz получите состав заказа;
-скопируйте значение атрибута «id» для "type": "orderentries".
- 
+### Атрибуты в ответе:
 
- Посмотреть пример запроса
+  Атрибут               | Описание
+  ----------------------|-------------------------------------------
+  id                    | Уникальный код заказа
+  code                  | Номер заказа
+  totalPrice            | Общая сумма в тенге
+  customer              | ФИО и телефон покупателя
+  paymentMode           | Способ оплаты
+  plannedDeliveryDate   | Планируемая дата доставки (мс)
+  creationDate          | Дата получения заказа (мс)
+  deliveryCostForSeller | Стоимость доставки для продавца
+  isKaspiDelivery       | Kaspi Доставка (true/false)
+  deliveryMode          | Способ доставки
+  deliveryAddress       | Адрес доставки (объект)
+  signatureRequired     | Нужно подписать кредит (true/false)
+  creditTerm            | Срок кредита
+  preOrder              | Предзаказ (true/false)
+  pickupPointId         | Уникальный код склада
+  state                 | Состояние заказа
+  approvedByBankDate    | Дата одобрения банком (мс)
+  status                | Статус заказа
+  deliveryCost          | Стоимость доставки
 
-GET
-https://kaspi.kz/shop/api/v2/orderentries/orderentriesID/product
-Content-Type: application/vnd.api+json
-X-Auth-Token: token
- 
+### Покупатель (customer):
 
-В ответе вы получите код товара в Магазине на Kaspi.kz, название и бренд.
+  Поле       | Описание
+  -----------|----------------------------
+  id         | Уникальный код клиента
+  name       | Имя в системе Kaspi
+  firstName  | Имя
+  lastName   | Фамилия
+  cellPhone  | Номер телефона
 
- 
-
-Атрибут
-
-Значение
-
-id
-
-Уникальный код товара в заказе
-
-code
-
-Код товара в Магазине на Kaspi.kz
-
-name
-
-Название
-
-manufacturer
-
-Бренд
-
-category
-
-Название категории
-
- 
-
- Посмотреть пример ответа
+### Пример ответа:
 
 {
-    "data": {
-        "type": "masterproducts",
-        "id": "masterproductsId»,
-        "attributes": {
-            "code": "103403297",
-            "name": "Фруктовик яблоко черный принц Польша 1 кг",
-            "category": "Фрукты"
-        },
-        "relationships": {
-            "merchantProduct": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/masterproducts/masterproductsID/relationships/merchantProduct",
-                    "related": "https://kaspi.kz/shop/api/v2/masterproducts/masterproductsID/merchantProduct"
-                },
-                "data": null
-            }
-        },
-        "links": {
-            "self": "https://kaspi.kz/shop/api/v2/masterproducts/masterproductsID"
-        }
-    },
-    "included": []
+  "data": [{
+    "type": "orders",
+    "id": "orderId",
+    "attributes": {
+      "code": "ordercode",
+      "totalPrice": 4000.0,
+      "paymentMode": "PAY_WITH_CREDIT",
+      "plannedDeliveryDate": 1706896790999,
+      "creationDate": 1706608613252,
+      "deliveryCostForSeller": 0.0,
+      "isKaspiDelivery": false,
+      "deliveryMode": "DELIVERY_LOCAL",
+      "deliveryAddress": {
+        "streetName": "улица Наурызбай батыра",
+        "streetNumber": "154А",
+        "town": "Алматы",
+        "formattedAddress": "Алматы, улица Наурызбай батыра, 154А",
+        "latitude": 43.240013,
+        "longitude": 76.938854
+      },
+      "signatureRequired": false,
+      "creditTerm": 3,
+      "preOrder": false,
+      "pickupPointId": "merchant_PP1",
+      "state": "DELIVERY",
+      "approvedByBankDate": 1706608657792,
+      "status": "ACCEPTED_BY_MERCHANT",
+      "customer": {
+        "id": "customerId",
+        "cellPhone": "7750000000",
+        "firstName": "customerfirstname",
+        "lastName": "customerlastname"
+      },
+      "deliveryCost": 500.0
+    }
+  }],
+  "meta": { "pageCount": 1, "totalCount": 1 }
 }
 
-8. Как с помощью API в Магазине на Kaspi.kz изменить статус заказа на «Выдан»
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
 
- 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Параметр
+## 4. Получить информацию о товарах в заказе
 
-Значение
+GET https://kaspi.kz/shop/api/v2/orders/{orderId}/entries
 
-X-Security-Code
+### Параметры:
 
-Код, который отправлен клиенту в мобильном приложении Kaspi.kz
+  Параметр | Описание
+  ---------|-----------------------------------
+  orderId  | Уникальный код заказа (из "type": "orders")
 
-X-Send-Code
+### Атрибуты в ответе:
 
-Статус отправки кода
+  Атрибут        | Описание
+  ---------------|-------------------------------------------
+  id             | Уникальный код товара в заказе
+  unitType       | Тип товара (см. ниже)
+  quantity       | Количество товара
+  totalPrice     | Общая стоимость
+  weight         | Вес (только для весовых товаров)
+  entryNumber    | Порядковый номер товара в заказе
+  category       | Код и название категории
+  deliveryCost   | Стоимость доставки
+  basePrice      | Стоимость одной единицы
+  isImeiRequired | Нужен IMEI-код (true/false)
 
- 
+### Типы товаров (unitType):
 
-В этом запросе — true
+  Значение           | Описание
+  -------------------|----------------------------
+  MEASURABLE_PIECES  | Цельно-весовой
+  MEASURABLE         | Весовой
+  PIECES             | Штучный
+  METERED            | Метражный
+  METERED_PIECES     | Штучно-метражный
 
-type
+### Пример запроса:
 
-Цель запроса
+GET https://kaspi.kz/shop/api/v2/orders/orderID/entries
+Headers:
+  Content-Type: application/vnd.api+json
+  X-Auth-Token: <token>
 
- 
+### Пример ответа:
 
-В этом случае — orders
-
-id
-
-Уникальный код заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите информацию о составе заказа;
-скопируйте значение атрибута «id» для "type": "orders".
- 
-
-Атрибут
-
-Значение
-
-code
-
-Номер заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите список заказов;
-скопируйте значение атрибута «code».
-status
-
-Статус, который должен получить заказ
-
- 
-
-В этом запросе — COMPLETED
-
- 
-
-1. Оставьте параметр X-Security-Code пустым.
-
-Это необходимо, чтобы клиент получил код в мобильном приложении Kaspi.kz.
-
- 
-
- Посмотреть пример первого запроса — для отправки кода покупателю
-
- https://kaspi.kz/shop/api/v2/orders
-POST /api/v2/orders
-HTTP/1.1
-Host: kaspi.kz/shop
-Content-Type: application/vnd.api+json
-X-Auth-Token:token
-X-Security-Code:
-X-Send-Code: true
 {
-"data": {
-"type": "orders",
-"id": "ordersID",
-"attributes": {
-"code": "ordercode",
-"status": "COMPLETED"
+  "data": [{
+    "type": "orderentries",
+    "id": "orderentriesId",
+    "attributes": {
+      "unitType": "PIECES",
+      "quantity": 2,
+      "totalPrice": 4000.0,
+      "weight": 2000.0,
+      "entryNumber": 0,
+      "category": { "code": "Master - Fruits", "title": "Фрукты" },
+      "deliveryCost": 500.0,
+      "basePrice": 2000.0,
+      "isImeiRequired": false
+    },
+    "relationships": {
+      "deliveryPointOfService": {
+        "data": { "type": "pointofservices", "id": "pointofservicesId" }
+      },
+      "product": {
+        "data": { "type": "masterproducts", "id": "masterproductsId" }
+      }
+    }
+  }]
 }
-}
- 
 
-2. Отправьте повторный запрос.
 
-Код, который вам назвал клиент, вставьте в параметр X-Security-Code.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
- 
+## 5. Сформировать накладную (Kaspi Доставка)
 
- Посмотреть пример второго запроса — для завершения заказа
+Изменяет статус на ASSEMBLE — создаёт накладную для передачи курьеру.
 
-https://kaspi.kz/shop/api/v2/orders
-POST /api/v2/orders
-HTTP/1.1
-Host: kaspi.kz/shop
-Content-Type: application/vnd.api+json
-X-Auth-Token:token
-X-Security-Code: 1234
-X-Send-Code: true
+POST https://kaspi.kz/shop/api/v2/orders
+
+### Атрибуты:
+
+  Атрибут        | Описание
+  ---------------|-------------------------------------------
+  status         | "ASSEMBLE"
+  numberOfSpace  | Количество мест (накладных)
+
+### Пример запроса:
+
+POST https://kaspi.kz/shop/api/v2/orders
+Headers:
+  Content-Type: application/vnd.api+json
+  X-Auth-Token: <token>
+
+Body:
 {
-"data": {
-"type": "orders",
-"id": "ordersId",
-"attributes": {
-"code": "ordercode",
-"status": "COMPLETED"
-}
-}
- 
-
-В ответе вы получите информацию, какой теперь статус у заказа.
-
- 
-
- Посмотреть пример ответа
-
- {
-    "data": {
-        "type": "orders",
-        "id": "ordersID",
-        "attributes": {
-            "code": "ordercode",
-            "status": "COMPLETED"
-        },
-        "relationships": {
-            "user": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orders/ordersID/relationships/user",
-                    "related": "https://kaspi.kz/shop/api/v2/orders/ordersID/user"
-                },
-                "data": null
-            },
-            "entries": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orders/ordersID/relationships/entries",
-                    "related": "https://kaspi.kz/shop/api/v2/orders/ordersID/entries"
-                }
-            }
-        },
-        "links": {
-            "self": "https://kaspi.kz/shop/api/v2/orders/ordersID"
-        }
-    },
-    "included": []
+  "data": {
+    "type": "orders",
+    "id": "ordersID",
+    "attributes": {
+      "status": "ASSEMBLE",
+      "numberOfSpace": "2"
+    }
+  }
 }
 
-9. Как с помощью API в Магазине на Kaspi.kz получить информацию об одном товаре в заказе?
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
+### Пример ответа:
 
- 
-
-Параметр
-
-Значение
-
-orderentriesId=
-
-Уникальный код товара в заказе
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите информацию о товарах в заказе;
-скопируйте значение атрибута «id» для "type": "orderentries".
- 
-
- Посмотреть пример запроса
-
-GET
-https://kaspi.kz/shop/api/v2/orderentries/orderentriesId=
-ContentType: application/vnd.api+json
-X-Auth-Token:token
- 
-
-В ответе вы получите стоимость каждого товара, а также информацию, сколько таких товаров купил клиент.
-
-Атрибут
-
-Значение
-
-id
-
-Уникальный код товара в заказе
-
-unitType
-
-Тип товара
-
- 
-
-MEASURABLE_PIECES
-
-MEASURABLE
-
-PIECES
-
-METERED
-
-METERED_PIECES
-
-цельно-весовой
-
-весовой
-
-штучный
-
-метражный
-
-штучно-метражный
-
-minAllowedWeight
-
-Минимальный вес товара
-
-quantity
-
-Количество каждого товара в заказе
-
-totalPrice
-
-Общая стоимость заказа
-
-weight
-
-Вес товара
-
- 
-
-Только для товаров, у которых указан вес
-
-entryNumber
-
-Порядковый номер товара в заказе
-
-code
-
-Код категории
-
-title
-
-Название категории
-
-deliveryCost
-
-Стоимость доставки
-
-basePrice
-
-Стоимость товара
-
- 
-
- Посмотреть пример ответа
-
- {
-    "data": {
-        "type": "orderentries",
-        "id": "orderentriesId",
-        "attributes": {
-            "unitType": "MEASURABLE_PIECES",
-            "minAllowedWeight": 1000.0,
-            "quantity": 3,
-            "totalPrice": 5928.0,
-            "weight": 3800.0,
-            "entryNumber": 0,
-            "category": {
-                "code": "Master - Umbrellas",
-                "title": "Зонты"
-            },
-            "deliveryCost": 0.0,
-            "basePrice": 1560.0
-        },
-        "relationships": {
-            "deliveryPointOfService": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orderentries/orderentriesId/relationships/deliveryPointOfService",
-                    "related": "https://kaspi.kz/shop/api/v2/orderentries/orderentriesId/deliveryPointOfService"
-                },
-                "data": {
-                    "type": "pointofservices",
-                    "id": "pointofservicesId"
-                }
-            },
-            "product": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orderentries/orderentriesId/relationships/product",
-                    "related": "https://kaspi.kz/shop/api/v2/orderentries/orderentriesId/product"
-                },
-                "data": {
-                    "type": "masterproducts",
-                    "id": "masterproductsId"
-                }
-            }
-        },
-        "links": {
-            "self": "https://kaspi.kz/shop/api/v2/orderentries/orderentriesId"
-        }
-    },
-    "included": []
+{
+  "data": {
+    "type": "orders",
+    "id": "ordersID",
+    "attributes": {
+      "numberOfSpace": 2,
+      "status": "ASSEMBLE"
+    }
+  }
 }
 
-10. Как с помощью API в Магазине на Kaspi.kz изменить вес товаров в заказе?
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
 
- 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Параметр
+## 6. Принять новый заказ
 
-Значение
+Меняет статус с APPROVED_BY_BANK на ACCEPTED_BY_MERCHANT.
 
-remainedWeight
+POST https://kaspi.kz/shop/api/v2/orders
 
-Сколько весит товар
+### Атрибуты:
 
- 
+  Атрибут | Описание
+  --------|-------------------------------------------
+  code    | Номер заказа
+  status  | "ACCEPTED_BY_MERCHANT"
 
-Если указать 0, товар удалится из заказа
+### Пример запроса:
 
-remainedQuantity
+POST https://kaspi.kz/shop/api/v2/orders
+Headers:
+  Content-Type: application/vnd.api+json
+  X-Auth-Token: <token>
 
-Сколько единиц товара должно быть в заказе
+Body:
+{
+  "data": {
+    "type": "orders",
+    "id": "ordersID",
+    "attributes": {
+      "code": "ordercode",
+      "status": "ACCEPTED_BY_MERCHANT"
+    }
+  }
+}
 
-reason
+### Пример ответа:
 
-Причина изменений
+{
+  "data": {
+    "type": "orders",
+    "id": "ordersID",
+    "attributes": {
+      "code": "ordercode",
+      "status": "ACCEPTED_BY_MERCHANT"
+    }
+  }
+}
 
- 
 
-PRODUCT_UNDERWEIGHT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-недовес по товару
+## 7. Получить описание товара в заказе
 
-notes
+GET https://kaspi.kz/shop/api/v2/orderentries/{orderentriesID}/product
 
-Комментарий продавца об изменениях
+### Параметры:
 
-id
+  Параметр        | Описание
+  ----------------|-------------------------------------------
+  orderentriesID  | Код товара (из "type": "orderentries")
 
-Уникальный код заказа
+### Атрибуты в ответе:
 
- 
+  Атрибут      | Описание
+  -------------|----------------------------
+  id           | Уникальный код товара
+  code         | Код товара в Магазине Kaspi
+  name         | Название
+  manufacturer | Бренд
+  category     | Название категории
 
-Чтобы его узнать:
+### Пример ответа:
 
-с помощью API в Магазине на Kaspi.kz получите информацию о товарах в заказе;
-скопируйте значение атрибута «id» для "type": "orderentries".
- 
+{
+  "data": {
+    "type": "masterproducts",
+    "id": "masterproductsId",
+    "attributes": {
+      "code": "103403297",
+      "name": "Фруктовик яблоко черный принц Польша 1 кг",
+      "category": "Фрукты"
+    }
+  }
+}
 
- Посмотреть пример запроса
 
-request PUT
-url: https://kaspi.kz/shop/api/orderPartialCancel/MDAwOTIwMDA
-Content-Type: application/vnd.api+json
-X-Auth-Token: token
-   
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 8. Изменить статус на «Выдан» (COMPLETED)
+
+Требует двухэтапную верификацию через код подтверждения покупателя.
+
+POST https://kaspi.kz/shop/api/v2/orders
+
+### Дополнительные заголовки:
+
+  Заголовок       | Описание
+  ----------------|-------------------------------------------
+  X-Security-Code | Код подтверждения от покупателя
+  X-Send-Code     | "true" — для отправки кода покупателю
+
+### Шаг 1: Отправка кода покупателю
+
+POST https://kaspi.kz/shop/api/v2/orders
+Headers:
+  Content-Type: application/vnd.api+json
+  X-Auth-Token: <token>
+  X-Security-Code:          (оставить пустым!)
+  X-Send-Code: true
+
+Body:
+{
+  "data": {
+    "type": "orders",
+    "id": "ordersID",
+    "attributes": {
+      "code": "ordercode",
+      "status": "COMPLETED"
+    }
+  }
+}
+
+### Шаг 2: Завершение заказа с кодом
+
+POST https://kaspi.kz/shop/api/v2/orders
+Headers:
+  Content-Type: application/vnd.api+json
+  X-Auth-Token: <token>
+  X-Security-Code: 1234     (код от покупателя)
+  X-Send-Code: true
+
+Body:
+{
+  "data": {
+    "type": "orders",
+    "id": "ordersId",
+    "attributes": {
+      "code": "ordercode",
+      "status": "COMPLETED"
+    }
+  }
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 9. Получить информацию об одном товаре
+
+GET https://kaspi.kz/shop/api/v2/orderentries/{orderentriesId}
+
+### Параметры:
+
+  Параметр        | Описание
+  ----------------|-------------------------------------------
+  orderentriesId  | Код товара (из "type": "orderentries")
+
+### Атрибуты в ответе:
+
+  Атрибут           | Описание
+  ------------------|-------------------------------------------
+  id                | Уникальный код товара в заказе
+  unitType          | Тип товара (PIECES, MEASURABLE и т.д.)
+  minAllowedWeight  | Минимальный вес товара
+  quantity          | Количество
+  totalPrice        | Общая стоимость
+  weight            | Вес (для весовых товаров)
+  entryNumber       | Порядковый номер в заказе
+  category          | Код и название категории
+  deliveryCost      | Стоимость доставки
+  basePrice         | Стоимость единицы
+
+### Пример ответа:
+
+{
+  "data": {
+    "type": "orderentries",
+    "id": "orderentriesId",
+    "attributes": {
+      "unitType": "MEASURABLE_PIECES",
+      "minAllowedWeight": 1000.0,
+      "quantity": 3,
+      "totalPrice": 5928.0,
+      "weight": 3800.0,
+      "entryNumber": 0,
+      "category": { "code": "Master - Umbrellas", "title": "Зонты" },
+      "deliveryCost": 0.0,
+      "basePrice": 1560.0
+    }
+  }
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 10. Изменить вес/количество товаров
+
+PUT https://kaspi.kz/shop/api/orderPartialCancel/{orderId}
+
+### Параметры:
+
+  Параметр          | Описание
+  ------------------|-------------------------------------------
+  remainedWeight    | Новый вес товара (0 = удалить из заказа)
+  remainedQuantity  | Новое количество
+  reason            | Причина: PRODUCT_UNDERWEIGHT (недовес)
+  notes             | Комментарий продавца
+  entry.id          | Код товара (из "type": "orderentries")
+
+### Пример запроса:
+
+PUT https://kaspi.kz/shop/api/orderPartialCancel/MDAwOTIwMDA
+Headers:
+  Content-Type: application/vnd.api+json
+  X-Auth-Token: <token>
+
+Body:
 [
   {
-    "entry": {
-      "id": "orderentriesId"
-    },
+    "entry": { "id": "orderentriesId" },
     "remainedWeight": 1000,
-    "remainedQuantity":1,
+    "remainedQuantity": 1,
     "reason": "PRODUCT_UNDERWEIGHT",
     "notes": "Недовес по товару"
   }
 ]
- 
 
-В ответе вы получите обновленную информацию о количестве товаров в заказе и их весе.
+### Пример ответа:
 
- 
-
-Параметр
-
-Значение
-
-remainedQuantity
-
-Сколько единиц товара должно быть в заказе
-
-remainedWeight
-
-Сколько весит товар
-
- 
-
-Если указать 0, товар удалится из заказа
-
-reason
-
-Причина изменений
-
- 
-
-PRODUCT_UNDERWEIGHT
-
-недовес по товару
-
-notes
-
-Комментарий продавца об изменениях
-
-id
-
-Уникальный код заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите информацию о товарах в заказе;
-скопируйте значение атрибута «id» для "type": "orderentries".
- 
-
- Посмотреть пример ответа
-
- {
-    "orderCancelEntries": [
-        {
-            "id": "Mjc0ODI0MzEwMjkyOTQ",
-            "notes": "Недовес по товару",
-            "entry": {
-                "id": "orderentriesId"
-            },
-            "remainedQuantity": 1,
-            "remainedWeight": 1000.0
-        }
-    ],
-    "status": "INPROGRESS"
-}
-
-11. Как с помощью API в Магазине на Kaspi.kz узнать адрес склада?
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
-
- 
-
-Параметр
-
-Значение
-
-pointOfServiceId
-
-Уникальный код склада
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz. получите информацию о складе, с которого покупатель заказал товар;
-скопируйте значение атрибута «id» для "type": "pointofservices"
- 
-
- Посмотреть пример запроса
-
-GET
-https://kaspi.kz/shop/api/v2/pointofservices/pointofservicesId
-Content-Type: application/vnd.api+json
-X-Auth-Token: token
- 
-
-В ответе вы получите название и адрес склада.
-
- 
-
-Атрибут
-
-Значение
-
-id
-
-Уникальный код склада
-
-address
-
-Адрес склада
-
- 
-
-streetName
-
-streetNumber
-
-town
-
-district
-
-building
-
-formattedAddress
-
- 
-
- 
-
-latitude
-
-longitude
-
-улица
-
-номер дома
-
-город
-
-район
-
-номер строения
-
-полный адрес
-
- 
-
-Географическая координата:
-
-широта
-
-долгота
-
-displayName
-
-Название склада
-
- 
-
- Посмотреть пример ответа
-
- {
-    "data": {
-        "type": "pointofservices",
-        "id": "pointofservicesId",
-        "attributes": {
-            "address": {
-                "streetName": " улица Каныша Сатпаева",
-                "streetNumber": " 22/1",
-                "town": "г. Алматы",
-                "district": null,
-                "building": null,
-                "apartment": null,
-                "formattedAddress": "г. Алматы,  улица Каныша Сатпаева,  22/1",
-                "latitude": 43.23662559520485,
-                "longitude": 76.93337309399296
-            },
-            "displayName": "PP1"
-        },
-        "relationships": {
-            "city": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/pointofservices/pointofservicesId/relationships/city",
-                    "related": "https://kaspi.kz/shop/api/v2/pointofservices/pointofservicesId/city"
-                },
-                "data": {
-                    "type": "cities",
-                    "id": "citiesID"
-                }
-            }
-        },
-        "links": {
-            "self": "https://kaspi.kz/shop/api/v2/pointofservices/pointofservicesId"
-        }
-    },
-    "included": []
-}
-
-12. Как с помощью API в Магазине на Kaspi.kz получить описание одного товара в заказе?
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
-
- 
-
-Параметр
-
-Значение
-
-masterproductsID==
-
-Уникальный код товара в заказе
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите описание товара из заказа;
-скопируйте значение атрибута «id» для "type": "masterproducts".
- 
-
- Посмотреть пример запроса
-
-GET
-https://kaspi.kz/shop/api/v2/masterproducts/masterproductsID/merchantProduct
-Content-Type: application/vnd.api+json
-X-Auth-Token: token
- 
-
-В ответе вы получите код вашего товара, название и бренд.
-
- 
-
-Атрибут
-
-Значение
-
-id
-
-Уникальный код товара продавца в заказе
-
-code
-
-Код товара в системе продавца
-
-name
-
-Название
-
-manufacturer
-
-Бренд
-
- 
-
- Посмотреть пример ответа
-
- {
-    "data": {
-        "type": "merchantproducts",
-        "id": "merchantproductsID»,
-        "attributes": {
-            "code": "103403297",
-            "name": "Фруктовик яблоко черный принц Польша 1 кг"
-        },
-        "relationships": {},
-        "links": {
-            "self": "https://kaspi.kz/shop/api/v2/merchantproducts/merchantproductsID"
-        }
-    },
-    "included": []
-}
-
-13. Как с помощью API в Магазине на Kaspi.kz отменить заказ?
-Для этого отправьте API-запрос. Можно использовать любой сервис, например, Postman, Insomnia, Paw, Swagger, SoapUI или настроить интеграцию с вашей системой учета.
-
- 
-
-Параметр
-
-Значение
-
-type
-
-Цель запроса
-
- 
-
-В этом случае — orders
-
-id
-
-Уникальный код заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите информацию о составе заказа;
-скопируйте значение атрибута «id» для "type": "orders".
- 
-
-Атрибут
-
-Значение
-
-code
-
-Номер заказа
-
- 
-
-Чтобы его узнать:
-
-с помощью API в Магазине на Kaspi.kz получите список заказов;
-скопируйте значение атрибута «code».
-status
-
-Статус, который должен получить заказ
-
- 
-
-CANCELLED
-
-Отменен
-
- 
-
-Используйте, если текущий статус — ACCEPTED_BY_MERCHANT
-
-cancellationReason
-
-Причина отмены
-
- 
-
-BUYER_CANCELLATION_BY_MERCHANT
-
-BUYER_NOT_REACHABLE
-
-MERCHANT_OUT_OF_STOCK
-
-Отказ покупателя
-
-Не удалось связаться с покупателем
-
-Товара нет в наличии
-
-cancellationComment
-
-Комментарий при отмене заказа
-
- 
-
-Не должен быть больше тысячи знаков
-
- 
-
- Посмотреть пример запроса
-
-https://kaspi.kz/shop/api/v2/orders
-POST /api/v2/orders
-HTTP/1.1
-Host: kaspi.kz/shop
-Content-Type: application/vnd.api+json
-X-Auth-Token:token
 {
-"data": {
-"type": "orders",
-"id": "ordersID",
-"attributes": {
-"code": "ordercode",
-"status": "CANCELLED",
-"cancellationReason": "BUYER_CANCELLATION_BY_MERCHANT"
-}
-}
- 
-
-В ответе вы получите информацию о статусе заказа. Она будет совпадать с данными в запросе, если он проведен успешно.
-
- 
-
- Посмотреть пример ответа
-
- {
-    "data": {
-        "type": "orders",
-        "id": "ordersID",
-        "attributes": {
-            "cancellationReason": "BUYER_CANCELLATION_BY_MERCHANT",
-            "status": "CANCELLED"
-        },
-        "relationships": {
-            "user": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orders/ordersID/relationships/user",
-                    "related": "https://kaspi.kz/shop/api/v2/orders/ordersID/user"
-                },
-                "data": null
-            },
-            "entries": {
-                "links": {
-                    "self": "https://kaspi.kz/shop/api/v2/orders/ordersID/relationships/entries",
-                    "related": "https://kaspi.kz/shop/api/v2/orders/ordersID/entries"
-                }
-            }
-        },
-        "links": {
-            "self": "https://kaspi.kz/shop/api/v2/orders/ordersID"
-        }
-    },
-    "included": []
+  "orderCancelEntries": [{
+    "id": "Mjc0ODI0MzEwMjkyOTQ",
+    "notes": "Недовес по товару",
+    "entry": { "id": "orderentriesId" },
+    "remainedQuantity": 1,
+    "remainedWeight": 1000.0
+  }],
+  "status": "INPROGRESS"
 }
 
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 11. Узнать адрес склада
+
+GET https://kaspi.kz/shop/api/v2/pointofservices/{pointOfServiceId}
+
+### Параметры:
+
+  Параметр          | Описание
+  ------------------|-------------------------------------------
+  pointOfServiceId  | Код склада (из "type": "pointofservices")
+
+### Атрибуты в ответе:
+
+  Атрибут      | Описание
+  -------------|----------------------------
+  id           | Уникальный код склада
+  displayName  | Название склада
+  address      | Адрес (объект: streetName, streetNumber, town, district, building, formattedAddress, latitude, longitude)
+
+### Пример ответа:
+
+{
+  "data": {
+    "type": "pointofservices",
+    "id": "pointofservicesId",
+    "attributes": {
+      "address": {
+        "streetName": "улица Каныша Сатпаева",
+        "streetNumber": "22/1",
+        "town": "г. Алматы",
+        "formattedAddress": "г. Алматы, улица Каныша Сатпаева, 22/1",
+        "latitude": 43.23662559520485,
+        "longitude": 76.93337309399296
+      },
+      "displayName": "PP1"
+    }
+  }
+}
 
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 12. Получить описание одного товара продавца
+
+GET https://kaspi.kz/shop/api/v2/masterproducts/{masterproductsID}/merchantProduct
+
+### Параметры:
+
+  Параметр          | Описание
+  ------------------|-------------------------------------------
+  masterproductsID  | Код товара (из "type": "masterproducts")
+
+### Атрибуты в ответе:
+
+  Атрибут      | Описание
+  -------------|----------------------------
+  id           | Код товара продавца
+  code         | Код товара в системе продавца
+  name         | Название
+  manufacturer | Бренд
+
+### Пример ответа:
+
+{
+  "data": {
+    "type": "merchantproducts",
+    "id": "merchantproductsID",
+    "attributes": {
+      "code": "103403297",
+      "name": "Фруктовик яблоко черный принц Польша 1 кг"
+    }
+  }
+}
 
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+## 13. Отменить заказ
 
+POST https://kaspi.kz/shop/api/v2/orders
 
+### Условие: текущий статус — ACCEPTED_BY_MERCHANT или APPROVED_BY_BANK
 
+### Атрибуты:
 
+  Атрибут              | Описание
+  ---------------------|-------------------------------------------
+  code                 | Номер заказа
+  status               | "CANCELLED"
+  cancellationReason   | Причина отмены (обязательно)
+  cancellationComment  | Комментарий (макс. 1000 символов)
 
+### Причины отмены:
 
+  Значение                        | Описание
+  --------------------------------|-----------------------------------
+  BUYER_CANCELLATION_BY_MERCHANT  | Отказ покупателя
+  BUYER_NOT_REACHABLE             | Не удалось связаться с покупателем
+  MERCHANT_OUT_OF_STOCK           | Товара нет в наличии
+
+### Пример запроса:
+
+POST https://kaspi.kz/shop/api/v2/orders
+Headers:
+  Content-Type: application/vnd.api+json
+  X-Auth-Token: <token>
+
+Body:
+{
+  "data": {
+    "type": "orders",
+    "id": "ordersID",
+    "attributes": {
+      "code": "ordercode",
+      "status": "CANCELLED",
+      "cancellationReason": "BUYER_CANCELLATION_BY_MERCHANT"
+    }
+  }
+}
+
+### Пример ответа:
+
+{
+  "data": {
+    "type": "orders",
+    "id": "ordersID",
+    "attributes": {
+      "cancellationReason": "BUYER_CANCELLATION_BY_MERCHANT",
+      "status": "CANCELLED"
+    }
+  }
+}
