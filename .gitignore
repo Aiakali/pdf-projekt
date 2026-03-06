@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+.next/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Environment / secrets
+.env
+.env*.local
+
+# Database & data
+*.db
+kaspi_bot/data/
+data-leads/
+
+# PDF files (generated)
+kaspi_bot/data/
+
+# Logs
+*.log
+kaspi_bot/logs_current.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Lock files (optional — pnpm-lock is large)
+pnpm-lock.yaml
+package-lock.json
+
+# v0 runtime
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
+
+# PDF documents
+*.pdf
